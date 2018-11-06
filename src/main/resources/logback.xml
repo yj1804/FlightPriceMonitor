@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+	<include resource="org/springframework/boot/logging/logback/base.xml" />
+	<contextName>logback</contextName>
+	<!-- 记录文件到特定目录 -->
+	<property name="log.path" value="d:\\trash\\flight-logback" />
+
+	<appender name="stash"
+		class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+		<destination>dockerdemo-2037667.lvs01.dev.ebayc3.com:3456
+		</destination>
+		<encoder class="net.logstash.logback.encoder.LogstashEncoder">
+			<providers>
+				<arguments />
+			</providers>
+		</encoder>
+	</appender>
+
+
+	<!--输出到控制台 -->
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<!-- <filter class="ch.qos.logback.classic.filter.ThresholdFilter"> <level>ERROR</level> 
+			</filter> -->
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} %contextName [%thread] %-5level %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<!--输出到文件 -->
+	<appender name="file"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${log.path}\\logback.%d{yyyy-MM-dd}.log</fileNamePattern>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} %contextName [%thread] %-5level %logger{36} - %msg%n</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+	</appender>
+
+
+	<root level="info">
+		<appender-ref ref="console" />
+		<appender-ref ref="file" />
+	</root>
+
+
+	<logger name="REPORTER" level="INFO" additivity="false">
+		<appender-ref ref="stash" />
+		<appender-ref ref="console" />
+		<appender-ref ref="file" />
+	</logger>
+</configuration>
